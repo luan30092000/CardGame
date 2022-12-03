@@ -1,11 +1,10 @@
 
 public class Client {
     public static void main(String[] args) {
-        DeckOfCard deck = new DeckOfCard();
-        Card top = deck.getTop();
-        top.printCard();
+        CardDeck deck = new CardDeck();
+//        Card top = deck.getTop();
         deck.shuffle();
-        deck.getTop().printCard();
+        deck.printDeck();
     }
 
 }
