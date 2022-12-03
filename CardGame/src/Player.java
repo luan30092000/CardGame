@@ -26,17 +26,22 @@ public class Player {
     /**
      * Player's name
      */
-    String name;
+    private String name;
 
     /**
      * number of cards are currently in player hand
      */
-    int currentCardNumber;
+    private int currentCardNumber;
 
     /**
      * Type of game card
      */
-    int gameNumCard = TYPE.BLACKJACK.getMaxHandCard();
+    private int gameNumCard = TYPE.BLACKJACK.getMaxHandCard();
+
+    /**
+     * current hand value of player
+     */
+    private int currentHandSum;
 
 
     Player(String name, int coin) {
@@ -71,31 +76,17 @@ public class Player {
     }
 
     public boolean addCard(Card aCard) {
-        if (currentCardNumber == 10) {
+        if (currentHandSum > 21) {
             return false;
         }
         cards[currentCardNumber] = aCard;
         currentCardNumber++;
+        currentHandSum += aCard.getRankValue();
         return true;
     }
 
     public int getHandSum() {
-        int sum = 0;
-        int numAce = 0;
-        for (int i = 0; i < currentCardNumber; i++) {
-            if (cards[i].getRank() == Rank.ACE) {
-                numAce += 1;
-                sum += 11;
-            } else {
-                sum += cards[i].getRankValue();
-            }
-        }
-        for (int i = 0; i < numAce; i++) {
-            if (sum > 21) {
-                sum -= 10;
-            }
-        }
-        return sum;
+        return currentHandSum;
     }
 
     public void printHandCard(boolean firstCardOnly) {
@@ -108,5 +99,9 @@ public class Player {
                 cards[i].printCard();
             }
         }
+    }
+
+    public String getName() {
+        return this.name;
     }
 }
