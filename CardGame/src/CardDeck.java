@@ -2,13 +2,19 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 class CardDeck {
-    private ArrayList<Card> cardDeck;
+    private final ArrayList<Card> cardDeck;
     int numCard;
-    public CardDeck() {
+    public CardDeck(boolean shuffle) {
         numCard = Suit.values().length * Rank.values().length;
         cardDeck = new ArrayList<>(numCard);
-
         reset();
+        if (shuffle) {
+            this.shuffle();
+        }
+    }
+
+    public CardDeck() {
+        this(false);
     }
 
     private void reset() {
@@ -19,13 +25,8 @@ class CardDeck {
         }
     }
 
-    public void shuffle() {
+    private void shuffle() {
         Collections.shuffle(cardDeck);
-    }
-
-    public void resetDeck() {
-        cardDeck = new ArrayList<>();
-        reset();
     }
 
     public Card getTop() {

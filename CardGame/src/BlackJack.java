@@ -11,8 +11,7 @@ public class BlackJack {
     }
 
     private void setupGame() {
-        cardDeck = new CardDeck();
-        cardDeck.shuffle();
+        cardDeck = new CardDeck(true);
     }
 
 }
