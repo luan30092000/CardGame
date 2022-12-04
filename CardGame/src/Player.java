@@ -43,7 +43,6 @@ public class Player {
      */
     private int currentHandSum;
 
-
     Player(String name, int coin) {
         this.name = name;
         this.coin = coin;
@@ -71,8 +70,9 @@ public class Player {
     }
 
     public void resetPlayerCard() {
-        Arrays.fill(cards, null);
+        Arrays.fill(this.cards, null);
         this.currentCardNumber = 0;
+        this.currentHandSum = 0;
     }
 
     public boolean addCard(Card aCard) {
