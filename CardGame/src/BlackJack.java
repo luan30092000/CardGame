@@ -9,65 +9,73 @@ public class BlackJack {
 
     Player dealer;
     CardDeck deck;
-    Player player1;
+    Player[] players;
+    int numPlayer;
+    Scanner sc;
 
-    public BlackJack() {
-        dealer = new Player("Dealer", 10000);
-        deck = new CardDeck();
-        player1 = new Player("Luan", 100);
+    public BlackJack(int numPlayers) {
+        this.numPlayer = numPlayers;
+        sc = new Scanner(System.in);
+        players = new Player[this.numPlayer];
+        System.out.println("Enter players' name: ");
+        for (int i = 0; i < this.numPlayer; i++) {
+            players[i] = new Player(sc.nextLine());
+        }
     }
 
-    public void runGame(Scanner sc) {
+    public BlackJack() {
+        this(1);
+    }
+
+    public void runGame() {
 
         // Deal cards
-        dealer.addCard(deck.getTop());
+        initialDeal();
 
-        player1.addCard(deck.getTop());
-        dealer.addCard(deck.getTop());
-        player1.addCard(deck.getTop());
-
-        System.out.println("Cards are dealt");
         dealer.printHandCard(false);
-        player1.printHandCard(false);
 
         String command;
-        boolean playerEnd = false;
         boolean dealerEnd = false;
-        while (!playerEnd) {
-            printHandValue(player1);
-            System.out.println("Hit(H) or Stand(S): ");
-            command = sc.next();
-            if (command.equals(COMMAND.H.toString())) {
-                playerEnd = !dealCard(player1);   // add card good, player is not busted yet
-                player1.printHandCard(false);
-            } else if (command.equals(COMMAND.S.toString())) {
-                playerEnd = true;
-            } else {
-                System.out.println("Wrong command");
-            }
-            if (player1.getHandSum() > 21) {
-                break;
+        for (Player i : players) {
+            boolean playerEnd = false;
+            while (!playerEnd) {
+                printHandValue(i);
+                System.out.println("Hit(H) or Stand(S): ");
+                command = sc.next();
+                if (command.equals(COMMAND.H.toString())) {
+                    playerEnd = !dealCard(i);   // add card good, player is not busted yet
+                    i.printHandCard(false);
+                } else if (command.equals(COMMAND.S.toString())) {
+                    playerEnd = true;
+                } else {
+                    System.out.println("Wrong command");
+                }
+                if (i.getHandSum() > 21) {
+                    break;
+                }
             }
         }
-        while (!dealerEnd && player1.getHandSum() <= 21) {
-            printHandValue(dealer);
-            while (dealerHandLow(player1)) {
-                dealCard(dealer);
+        for (Player i : players) {
+            while (!dealerEnd && i.getHandSum() <= 21) {
                 printHandValue(dealer);
+                while (dealerHandLow(i)) {
+                    dealCard(dealer);
+                    printHandValue(dealer);
+                }
+                dealerEnd = true;
             }
-            dealerEnd = true;
-        }
-        if (player1.getHandSum() > 21) {
-            System.out.println("Dealer wins");
-        } else {
-            if (!dealerHandLow(player1) && dealer.getHandSum() <= 21){
+            if (i.getHandSum() > 21) {
                 System.out.println("Dealer wins");
             } else {
-                System.out.println("Player wins");
+                if (!dealerHandLow(i) && dealer.getHandSum() <= 21) {
+                    System.out.println("Dealer wins");
+                } else {
+                    System.out.println("Player wins");
+                }
             }
         }
         resetPlayer(dealer);
-        resetPlayer(player1);
+        resetPlayer(players);
     }
 
     private static void printHandValue(Player player) {
@@ -78,15 +86,29 @@ public class BlackJack {
         return this.dealer.getHandSum() < player.getHandSum();
     }
 
-    private boolean dealCard(Player player) {
-        return player.addCard(deck.getTop());
-    }
-
-    private void printHand(Player player) {
-        player.printHandCard(false);
+    private void printHand(Player player, boolean printHalf) {
+        player.printHandCard(printHalf);
     }
 
     private void resetPlayer(Player player) {
         player.resetPlayerCard();
+    }
+
+    private void initialDeal() {
+        dealer.addCard(deck.getTop());
+        for (Player i : players) {i.addCard(deck.getTop());}
+        dealer.addCard(deck.getTop());
+        for (Player i : players) {i.addCard(deck.getTop());}
+        System.out.println("Cards have been dealt");
+    }
+
+    private boolean dealCard(Player player) {
+        return player.addCard(deck.getTop());
+    }
+
+    private void openCard() {
+        for (Player i : players) {
+            i.printHandCard(false);
+        }
     }
 }

@@ -50,6 +50,10 @@ public class Player {
         this.currentCardNumber = 0;
     }
 
+    Player(String name) {
+        this(name, 100);
+    }
+
     public int bet(int amount) {
         if (amount > coin) {
             // No bet implementation  //todo Implement Error
@@ -101,7 +105,17 @@ public class Player {
         }
     }
 
+    public int takeCoin(int amount) {
+        if (amount > this.coin) {
+            this.coin = 0;
+        } else {
+            this.coin -= this.coin - amount;
+        }
+        return amount;
+    }
+
     public String getName() {
         return this.name;
     }
+
 }
