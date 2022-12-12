@@ -43,49 +43,77 @@ public class Player {
      */
     private int currentHandSum;
 
+    private int betCoin;
+
+    private boolean busted;
+
     Player(String name, int coin) {
         this.name = name;
         this.coin = coin;
         this.cards = new Card[gameNumCard];
         this.currentCardNumber = 0;
+        this.busted = false;
     }
 
     Player(String name) {
         this(name, 100);
     }
 
-    public int bet(int amount) {
-        if (amount > coin) {
-            // No bet implementation  //todo Implement Error
-            this.coin = 0;
-            return 0;
+    public void bet(int amount) {
+        if (amount > this.coin) {
+            this.betCoin = this.coin;
         } else {
-            coin = coin - amount;
-            return amount;
+            this.betCoin = amount;
         }
     }
 
-    public Card[] fold() {
-        return cards;
+    /**
+     * Method for player when player lost
+     */
+    public void removeCoin() {
+        this.coin -= betCoin;
+        betCoin = 0;
     }
 
-    public int getCoin() {
-        return coin;
+    /**
+     * Method for dealer
+     * @param player player that dealer have to pay for
+     */
+    public void removeCoin(Player player) {
+        this.coin -= player.getBetCoin();
+    }
+
+    /**
+     * Method for player, add whatever player bet
+     */
+    public void addCoin() {
+        this.coin += betCoin;
+        betCoin = 0;
+    }
+
+    /**
+     * Dealer coin will be added for player coin
+     * @param player player that lost
+     */
+    public void addCoin(Player player) {
+        this.coin += player.getBetCoin();
     }
 
     public void resetPlayerCard() {
         Arrays.fill(this.cards, null);
         this.currentCardNumber = 0;
         this.currentHandSum = 0;
+        betCoin = 0;
+        busted = false;
     }
 
     public boolean addCard(Card aCard) {
-        if (currentHandSum > 21) {
-            return false;
-        }
         cards[currentCardNumber] = aCard;
         currentCardNumber++;
         currentHandSum += aCard.getRankValue();
+        if (currentHandSum > 21) {
+            return false;
+        }
         return true;
     }
 
@@ -105,17 +133,20 @@ public class Player {
         }
     }
 
-    public int takeCoin(int amount) {
-        if (amount > this.coin) {
-            this.coin = 0;
-        } else {
-            this.coin -= this.coin - amount;
-        }
-        return amount;
-    }
-
     public String getName() {
         return this.name;
+    }
+
+    public boolean isBusted() {
+        return busted;
+    }
+
+    public int getBetCoin() {
+        return this.betCoin;
+    }
+
+    public int getCoin() {
+        return this.coin;
     }
 
 }

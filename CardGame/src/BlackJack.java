@@ -21,73 +21,90 @@ public class BlackJack {
         for (int i = 0; i < this.numPlayer; i++) {
             players[i] = new Player(sc.nextLine());
         }
+        deck = new CardDeck();
+        dealer = new Player("Dealer", 1000000);
     }
 
     public BlackJack() {
         this(1);
     }
 
-    public void runGame() {
+    public void runGame(Scanner sc) {
 
         // Deal cards
         initialDeal();
 
-        dealer.printHandCard(false);
-
         String command;
-        boolean dealerEnd = false;
+
+        // Taking bet
         for (Player i : players) {
-            boolean playerEnd = false;
-            while (!playerEnd) {
-                printHandValue(i);
+            System.out.println("Enter betting amount: ");
+            i.bet(Integer.parseInt(sc.nextLine()));
+        }
+
+        dealer.printHandCard(true);
+
+        // Each player turn if bet
+        for (Player i : players) {
+            if (i.getBetCoin() != 0) {
+                boolean playerEnd = false;
                 System.out.println("Hit(H) or Stand(S): ");
-                command = sc.next();
-                if (command.equals(COMMAND.H.toString())) {
-                    playerEnd = !dealCard(i);   // add card good, player is not busted yet
-                    i.printHandCard(false);
-                } else if (command.equals(COMMAND.S.toString())) {
-                    playerEnd = true;
-                } else {
-                    System.out.println("Wrong command");
-                }
-                if (i.getHandSum() > 21) {
-                    break;
+                printHand(i, false);
+                while (!playerEnd) {
+                    command = this.sc.next();
+                    if (command.equals(COMMAND.H.toString())) {
+                        playerEnd = !dealCard(i);   // add card good, player is not busted yet
+                        i.printHandCard(false);
+                        if (getHandValue(i) > 21) {
+                            dealer.addCoin(i);
+                            i.removeCoin();
+                        }
+                    } else if (command.equals(COMMAND.S.toString())) {
+                        playerEnd = true;
+                    } else {
+                        System.out.println("Wrong command");
+                    }
                 }
             }
         }
+
+        printHand(dealer, false);
+        while(getHandValue(dealer) < 17){
+            dealCard(dealer);
+            printHand(dealer, false);
+        }
+
+        if (getHandValue(dealer) > 21) {
+            for (Player i : players) {
+                i.addCoin();
+                dealer.removeCoin(i);
+            }
+         } else {
+            for (Player i : players) {
+                if (i.getBetCoin() > 0) {
+                    if (getHandValue(dealer) > getHandValue(i)) {
+                        System.out.println("Dealer win");
+                        dealerWon(i);
+                    } else if (getHandValue(dealer) < getHandValue(i)) {
+                        System.out.println(i.getName() + " win");
+                        dealerLost(i);
+                    }
+                }
+            }
+        }
+
         for (Player i : players) {
-            while (!dealerEnd && i.getHandSum() <= 21) {
-                printHandValue(dealer);
-                while (dealerHandLow(i)) {
-                    dealCard(dealer);
-                    printHandValue(dealer);
-                }
-                dealerEnd = true;
-            }
-            if (i.getHandSum() > 21) {
-                System.out.println("Dealer wins");
-            } else {
-                if (!dealerHandLow(i) && dealer.getHandSum() <= 21) {
-                    System.out.println("Dealer wins");
-                } else {
-                    System.out.println("Player wins");
-                }
-            }
+            System.out.println("Player " + i.getName() + i.getCoin());
         }
-        resetPlayer(dealer);
-        resetPlayer(players);
-    }
-
-    private static void printHandValue(Player player) {
-        System.out.printf("%s's hand value: %d\n", player.getName(), player.getHandSum());
-    }
-
-    private boolean dealerHandLow(Player player) {
-        return this.dealer.getHandSum() < player.getHandSum();
+        System.out.println("dealer: " + dealer.getCoin());
     }
 
     private void printHand(Player player, boolean printHalf) {
         player.printHandCard(printHalf);
+    }
+
+    private void printHand() {
+        printHand(this.dealer, true);
     }
 
     private void resetPlayer(Player player) {
@@ -110,5 +127,23 @@ public class BlackJack {
         for (Player i : players) {
             i.printHandCard(false);
         }
+    }
+
+    private int getHandValue(Player player) {
+        return player.getHandSum();
+    }
+
+    private boolean isBusted(Player player) {
+        return player.isBusted();
+    }
+
+    private void dealerWon(Player p1) {
+        this.dealer.addCoin(p1);
+        p1.removeCoin();
+    }
+
+    private void dealerLost(Player p1) {
+        this.dealer.removeCoin(p1);
+        p1.addCoin();
     }
 }
