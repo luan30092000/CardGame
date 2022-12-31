@@ -45,18 +45,23 @@ public class Player {
 
     private int betCoin;
 
-    private boolean busted;
 
     Player(String name, int coin) {
         this.name = name;
         this.coin = coin;
         this.cards = new Card[gameNumCard];
         this.currentCardNumber = 0;
-        this.busted = false;
     }
 
     Player(String name) {
         this(name, 100);
+    }
+
+    public void resetPlayerCard() {
+        Arrays.fill(this.cards, null);
+        this.currentCardNumber = 0;
+        this.currentHandSum = 0;
+        betCoin = 0;
     }
 
     public void bet(int amount) {
@@ -99,13 +104,6 @@ public class Player {
         this.coin += player.getBetCoin();
     }
 
-    public void resetPlayerCard() {
-        Arrays.fill(this.cards, null);
-        this.currentCardNumber = 0;
-        this.currentHandSum = 0;
-        betCoin = 0;
-        busted = false;
-    }
 
     public boolean addCard(Card aCard) {
         cards[currentCardNumber] = aCard;
@@ -137,16 +135,16 @@ public class Player {
         return this.name;
     }
 
-    public boolean isBusted() {
-        return busted;
-    }
-
     public int getBetCoin() {
         return this.betCoin;
     }
 
     public int getCoin() {
         return this.coin;
+    }
+
+    public void printStatus() {
+        System.out.printf("Player %s: %d ",this.name,this.coin);
     }
 
 }

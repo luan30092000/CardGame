@@ -113,9 +113,17 @@ public class BlackJack {
 
     private void initialDeal() {
         dealer.addCard(deck.getTop());
-        for (Player i : players) {i.addCard(deck.getTop());}
+        for (Player i : players) {
+            if (i.getBetCoin() > 0) {
+                i.addCard(deck.getTop());
+            }
+        }
         dealer.addCard(deck.getTop());
-        for (Player i : players) {i.addCard(deck.getTop());}
+        for (Player i : players) {
+            if (i.getBetCoin() > 0) {
+                i.addCard(deck.getTop());
+            }
+        }
         System.out.println("Cards have been dealt");
     }
 
@@ -123,18 +131,8 @@ public class BlackJack {
         return player.addCard(deck.getTop());
     }
 
-    private void openCard() {
-        for (Player i : players) {
-            i.printHandCard(false);
-        }
-    }
-
     private int getHandValue(Player player) {
         return player.getHandSum();
-    }
-
-    private boolean isBusted(Player player) {
-        return player.isBusted();
     }
 
     private void dealerWon(Player p1) {
